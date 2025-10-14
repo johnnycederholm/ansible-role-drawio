@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Get latest release of a public repository
+  community.general.github_release:
+    user: jgraph
+    repo: drawio-desktop
+    action: latest_release
+  register: release
+
+- name: Download package
+  ansible.builtin.get_url:
+    url: https://github.com/jgraph/drawio-desktop/releases/download/{{ release.tag }}/drawio-amd64-{{ release.tag[1:] }}.deb
+    dest: /tmp
+    mode: "644"
+
+- name: Install DrawIO
+  ansible.builtin.apt:
+    deb: /tmp/drawio-amd64-{{ release.tag[1:] }}.deb
+    state: present
